@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,9 +11,9 @@ class UserStroreController
     public function store($password)
     {
         (new userValidatorAuth())->validateUser();
+
         $user = new User();
-        $helper = new UserHelper;
-        $user->password = $helper->generatePassword($password);
+        $user->password = (new UserPasswordHelper())->generatePasswordHard($password);
         $user->save();
     }
 }
@@ -30,10 +29,15 @@ class userValidatorAuth
     }
 }
 
-class UserHelper
+class UserPasswordHelper
 {
     public function generatePassword($password)
     {
         return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    public function generatePasswordHard($password)
+    {
+        return password_hash($password, PASSWORD_BCRYPT);
     }
 }
