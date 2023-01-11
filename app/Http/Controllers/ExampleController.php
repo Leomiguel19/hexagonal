@@ -27,9 +27,13 @@ class claseB
         $this->claseC = $claseC;
     }
 
-    public function getInformation()
+    public function getInformationOfClaseA()
     {
         $this->claseA->getInformationItems();
+    }
+
+    public function getInformationOfClaseC()
+    {
         $this->claseC->getInformationOfClaseC();
     }
 }
