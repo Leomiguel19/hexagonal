@@ -1,39 +1,46 @@
 <?php
 
-class claseA
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
+interface connectionAdapter
 {
-    public function getInformationItems()
+    public function getAllUsers(): ?array;
+}
+
+class EloquentAdapter implements ConnectionAdapter
+{
+    public function getAllUsers(): ?array
     {
-        return ["items"];
+        $users = User::all();
+        return [
+            "users" => $users
+        ];
     }
 }
 
-class claseC
+class storeProcedureAdapter implements ConnectionAdapter
 {
-    public function getInformationOfClaseC()
+    public function getAllUsers(): ?array
     {
-        return ["c"];
+        $users = DB::execute('CALL lsp_call_all_users(');
+        return [
+            "users" => $users
+        ];
     }
 }
 
-class claseB
+class IndexController
 {
-    private $claseA;
-    private $claseC;
+    private $adapter;
 
-    public function __construct(claseA $claseA, claseC $claseC)
+    public function __construct(EloquentAdapter $adapter)
     {
-        $this->claseA = $claseA;
-        $this->claseC = $claseC;
+        $this->adapter = $adapter;
     }
 
-    public function getInformationOfClaseA()
+    public function __invoke(): ?array 
     {
-        $this->claseA->getInformationItems();
-    }
-
-    public function getInformationOfClaseC()
-    {
-        $this->claseC->getInformationOfClaseC();
+        return $this->adapter->getAllUsers();
     }
 }
