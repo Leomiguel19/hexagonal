@@ -44,7 +44,7 @@ final class HandlerException extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
+        $this->renderable(function (Throwable $e) {
             if($e instanceof CustomException){
                 return response()->json($e->toException(), $e->getCode());
             }
