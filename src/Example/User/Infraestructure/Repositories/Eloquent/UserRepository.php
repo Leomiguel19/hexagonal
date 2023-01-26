@@ -1,13 +1,19 @@
 <?php
-
 namespace Src\Example\User\Infraestructure\Repositories\Eloquent;
 
 use Src\Example\User\Domain\Contracts\UserRepositoryContract;
-
+use Src\Example\User\Infraestructure\Repositories\Eloquent\User;
 final class UserRepository implements UserRepositoryContract
 {
+    private $model;
+
+    public function __construct()
+    {
+        $this->model = new User;
+    }
+
     public function findAll(): array
     {
-        return ["Hola Mundo"];
+        return $this->model->all()->toArray();
     }
 }
