@@ -2,20 +2,20 @@
 
 namespace Src\Example\User\Application\Find;
 
+use Src\Example\User\Domain\Contracts\UserRepositoryContract;
 use Src\Example\User\Domain\Exceptions\UserException;
 
 final class UserFindAllUseCase
 {
-    public function __construct()
+    private $repository;
+
+    public function __construct(UserRepositoryContract $repository)
     {
-        //algo
+        $this->repository = $repository;
     }
 
     public function __invoke(): array
     {
-        throw new UserException("Usuario no encontrado", 404);
-        return [
-            "saludo" => "Hola mundo desde el caso de uso",
-        ];
+        return $this->repository->findAll();
     }
 }
