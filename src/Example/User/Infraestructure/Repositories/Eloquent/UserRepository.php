@@ -24,4 +24,9 @@ final class UserRepository implements UserRepositoryContract
         
         return ($response) ? $this->model->find($id->value())->toArray() : null;
     }
+
+    public function deleteById(UserId $id): bool
+    {
+        return $this->model->where('id', $id->value())->delete();
+    }
 }
