@@ -1,46 +1,44 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-interface connectionAdapter
+class UserStoreController
 {
-    public function getAllUsers(): ?array;
-}
-
-class EloquentAdapter implements ConnectionAdapter
-{
-    public function getAllUsers(): ?array
+    public function store($password)
     {
-        $users = User::all();
-        return [
-            "users" => $users
-        ];
+        (new userValidatorAuth())->validateUser();
+
+        $user = new User();
+        $user->password = (new UserPasswordHelper())->generatePasswordHard($password);
+        $user->save();
     }
 }
 
-class storeProcedureAdapter implements ConnectionAdapter
+class userValidatorAuth
 {
-    public function getAllUsers(): ?array
+    public function validateUser()
     {
-        $users = DB::execute('CALL lsp_call_all_users(');
-        return [
-            "users" => $users
-        ];
+        if(!Auth::id() == 1213124)
+        {
+            throw new Exception("Error en auth");
+        }
     }
 }
 
-class IndexController
+class UserPasswordHelper
 {
-    private $adapter;
-
-    public function __construct(EloquentAdapter $adapter)
+    public function generatePassword($password)
     {
-        $this->adapter = $adapter;
+        return password_hash($password, PASSWORD_DEFAULT);
     }
 
-    public function __invoke(): ?array 
+    public function generatePasswordHard($password)
     {
-        return $this->adapter->getAllUsers();
+        return password_hash($password, PASSWORD_BCRYPT);
     }
 }
