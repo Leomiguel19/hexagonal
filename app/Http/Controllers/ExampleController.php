@@ -1,43 +1,27 @@
 <?php
 
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use Exception;
-use Illuminate\Support\Facades\Auth;
-
-class UserStoreController
+abstract class ParentClass
 {
-    public function store($password)
-    {
-        (new userValidatorAuth())->validateUser();
-
-        $user = new User();
-        $user->password = (new UserPasswordHelper())->generatePasswordHard($password);
-        $user->save();
-    }
+    abstract function getSayHello(string $person): array;
 }
 
-class userValidatorAuth
+interface ParentInterface
 {
-    public function validateUser()
-    {
-        if(!Auth::id() == 1213124)
-        {
-            throw new Exception("Error en auth");
-        }
-    }
+    public function getSayBye(string $person): int;
 }
 
-class UserPasswordHelper
+final class ChildClass extends ParentClass implements ParentInterface
 {
-    public function generatePassword($password)
+
+    public function getSayHello(string $person): array
     {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return [
+            "saludo" => "Hello world" . $person,
+        ];
     }
 
-    public function generatePasswordHard($password)
+    public function getSayBye(string $person): int
     {
-        return password_hash($password, PASSWORD_BCRYPT);
+        return 1 + 1;
     }
 }
