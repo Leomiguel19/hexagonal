@@ -1,44 +1,38 @@
 <?php
 
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class UserStoreController
+interface Users
 {
-    public function store($password)
-    {
-        (new userValidatorAuth())->validateUser();
-
-        $user = new User();
-        $user->password = (new UserPasswordHelper())->generatePasswordHard($password);
-        $user->save();
-    }
+    public function sayHello();
 }
 
-class userValidatorAuth
+class NaturalUser implements Users
 {
-    public function validateUser()
+    public function sayHello()
     {
-        if(!Auth::id() == 1213124)
-        {
-            throw new Exception("Error en auth");
-        }
-    }
+        return 'Hello world from natural user';
+    } 
 }
 
-class UserPasswordHelper
+class BussinesUser implements Users
 {
-    public function generatePassword($password)
+    public function sayHello()
     {
-        return password_hash($password, PASSWORD_DEFAULT);
-    }
+        return 'Hello world from bussines user';
+    } 
+}
 
-    public function generatePasswordHard($password)
+class AdminUser implements Users
+{
+    public function sayHello()
     {
-        return password_hash($password, PASSWORD_BCRYPT);
+        return 'Hello world from admin user';
+    } 
+}
+
+class UserImplementation
+{
+    public function identifyUser(Users $users)
+    {
+        $users->sayHello();
     }
 }
