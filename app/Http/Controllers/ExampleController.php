@@ -1,34 +1,46 @@
 <?php
 
-interface response
-{
-    public function JsonResponse(): string;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
-    public function HtmlResponse(): string;
+interface connectionAdapter
+{
+    public function getAllUsers(): ?array;
 }
 
-interface BinaryResponse
+class EloquentAdapter implements ConnectionAdapter
 {
-    public function BinaryResponse();
-}
-
-final class apiResponse implements Response
-{
-    public function JsonResponse(): string
+    public function getAllUsers(): ?array
     {
-        return json_encode("hello world", true);
-    }
-
-    public function HtmlResponse(): string
-    {
-        return "<br>Hello world</br>";
+        $users = User::all();
+        return [
+            "users" => $users
+        ];
     }
 }
 
-final class fileResponse implements BinaryResponse
+class storeProcedureAdapter implements ConnectionAdapter
 {
-    public function BinaryResponse(): string
+    public function getAllUsers(): ?array
     {
-        return true;
+        $users = DB::execute('CALL lsp_call_all_users(');
+        return [
+            "users" => $users
+        ];
+    }
+}
+
+class IndexController
+{
+    private $adapter;
+
+    public function __construct(EloquentAdapter $adapter)
+    {
+        $this->adapter = $adapter;
+    }
+
+    public function __invoke(): ?array 
+    {
+        return $this->adapter->getAllUsers();
     }
 }
